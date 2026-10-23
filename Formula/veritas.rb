@@ -6,7 +6,7 @@ class Veritas < Formula
   url "https://github.com/frimpsjoek/veritas-ai/archive/refs/tags/v0.54.0.tar.gz"
   sha256 "b4d5518eadf14df52c3a06cf3f6f98ec1e9a73f6f8c37b1e109dcfeffac30ebe"
   license "MIT"
-  revision 1
+  revision 2
 
   depends_on "node@22" => :build
   depends_on "node@22"
@@ -30,6 +30,8 @@ class Veritas < Formula
     # The Python environment lives beside the data, not in the keg: Homebrew rewrites the libraries of files in a keg,
     # which fails for prebuilt wheels (tantivy); here it is also kept across upgrades and rebuilt when they change.
     venv = var/"veritas/venv"
+    ENV["UV_CACHE_DIR"] = (var/"veritas/.uv-cache").to_s  # the sandbox allows no writes to ~/.cache
+    ENV["UV_PYTHON_DOWNLOADS"] = "never"
     system Formula["uv"].opt_bin/"uv", "venv", "--allow-existing", "--python", Formula["python@3.12"].opt_bin/"python3.12", venv
     system Formula["uv"].opt_bin/"uv", "pip", "install", "--python", venv/"bin/python", "-r", libexec/"server/requirements.txt"
     # the web app goes into the data folder, so an upgrade does not wipe it either
